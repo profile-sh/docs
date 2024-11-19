@@ -1,0 +1,13 @@
+name: build_deploy_gh_pages
+on:
+  workflow_dispatch 
+jobs:   
+  job1: 
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    name: call the reusable workflow
+    uses: gh-pages-project/workflows/.github/workflows/build_deploy_gh_pages.yml@main
+    with:
+      build_source: './docs'
