@@ -1,0 +1,6 @@
+title: Docs for various projects
+author: sha
+description: Bookmark for updates!
+remote_theme: pages-themes/cayman
+plugins:
+- jekyll-remote-theme
