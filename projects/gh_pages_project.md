@@ -438,7 +438,7 @@ The code
 
 {% raw %}
 ```
-        ![test image](/data/img3783small.jpeg)
+        ![test image](/your_image_location/img3783small.jpeg)
 ```
 {% endraw %}
 
