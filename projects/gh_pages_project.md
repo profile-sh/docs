@@ -434,11 +434,13 @@ This topic is a bit advanced for this project, a separate project is needed for 
 
 Include a local image ([image source](https://unsplash.com/photos/sun-light-passing-through-green-leafed-tree-EwKXn5CapA4)):
 
-
+```
+             ![image]({% link data/img3783small.jpeg %})
+```
 
 result:
 
-![image]({% link /projects/data/img3783small.jpeg | relative_url %})
+![image]({% link {{site.baseurl}}/projects/data/img3783small.jpeg %})
 
 ### 4.2 Code blocks
 
