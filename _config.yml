@@ -2,6 +2,6 @@ title: Docs for various projects
 author: sha
 description: Bookmark for updates!
 remote_theme: pages-themes/cayman
-baseurl: docs
+baseurl: /docs
 plugins:
 - jekyll-remote-theme
