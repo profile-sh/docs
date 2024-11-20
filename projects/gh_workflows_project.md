@@ -36,9 +36,11 @@ on:
   workflow_dispatch
 jobs:   
   job1:
+    name: test job
+    runs-on: ubuntu-latest
     steps:
-     step1:
-     run: echo 'hello'
+      - name: say hello
+        run: echo 'hello'
 ```
 
 Exercise: run a workflow
@@ -47,7 +49,6 @@ Exercise: run a workflow
 - on left side menu click w1_hello
 - click the dropdown *Run workflow* on the right side
 - wait for the run to finish
-- refresh your pages site and if everything went well, the site will reload successfully
 
 ## Workflows
 
