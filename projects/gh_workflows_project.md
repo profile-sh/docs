@@ -10,9 +10,10 @@ date: 18-11-2024
 Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. This project is an example focused walk through of  GitHub workflows and actions. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help.
 
 <details open>
+  
   <summary> ## 1. Workflow setup </summary>
   
-  We need to create a public organization and two repos under it:
+  We need a public organization and two repos under it:
   
   ### 1.1 Exercise: Create workflow repos
   
