@@ -461,7 +461,7 @@ the above code renders as:
 ### 4.3 Diagrams and math
 
 We use [Mermaid](https://mermaid.js.org/) for diagrams, and  [MathJax](https://www.mathjax.org/) for math equations. 
-See test pages ([test_mermaid]({% link pages/test_mermaid.md %}) and [test_mathjax]({% link pages/test_mathjax.md %})). See the source code in the *_includes* and *pages* folders of the [repo](https://github.com/gh-pages-project/gh-pages-project.github.io).
+See test pages ([test_mermaid](https://gh-pages-project.github.io/pages/test_mermaid) and [test_mathjax](https://gh-pages-project.github.io/pages/test_mathjax)). See the source code in the *_includes* and *pages* folders of the [repo](https://github.com/gh-pages-project/gh-pages-project.github.io).
 
 Great, the project is done. Happy writing ❤️.
 
