@@ -8,6 +8,4 @@ jobs:
       pages: write
       id-token: write
     name: call the reusable workflow
-    uses: gh-pages-project/workflows/.github/workflows/build_deploy_gh_pages.yml@main
-    with:
-      build_source: './docs'
+    uses: workflows-and-actions/library/.github/workflows/build_deploy.yml@main
