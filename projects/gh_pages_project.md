@@ -440,7 +440,7 @@ Include a local image ([image source](https://unsplash.com/photos/sun-light-pass
 
 result:
 
-![image]({% link data/img3783small.jpeg %})
+![image]({% link /projects/data/img3783small.jpeg | relative_url %})
 
 ### 4.2 Code blocks
 
