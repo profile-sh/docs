@@ -436,13 +436,13 @@ Include a local image ([image source](https://unsplash.com/photos/sun-light-pass
 
 {% raw %}
 ```
-![image]({% link data/img3783small.jpeg %})
+![test image]({% link data/img3783small.jpeg %})
 ```
 {% endraw %}
 
 result:
 
-![image]({% link projects/data/img3783small.jpeg %})
+![test image](/docs/projects/data/img3783small.jpeg)
 
 ### 4.2 Code blocks
 
