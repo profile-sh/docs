@@ -434,9 +434,11 @@ This topic is a bit advanced for this project, a separate project is needed for 
 
 Include a local image ([image source](https://unsplash.com/photos/sun-light-passing-through-green-leafed-tree-EwKXn5CapA4)):
 
+{% raw %}
 ```
-             ![image]({% link data/img3783small.jpeg %})
+![image]({% link data/img3783small.jpeg %})
 ```
+{% endraw %}
 
 result:
 
