@@ -1,0 +1,18 @@
+name: build_deploy
+on:
+  workflow_dispatch 
+jobs:   
+  job1: 
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    name: call the reusable workflow
+    uses: workflows-and-actions/library/.github/workflows/build_deploy.yml@main
+    with:
+      build_source: '' # if building from repo root, use '' (not '.' or './')
+      build_destination: _site
+      sparse_checkout: true # if true, action/checkout will checkout only build_source
+      build_languages: 'jekyll'
+      deploy_to: gh-pages
+          
