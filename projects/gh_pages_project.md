@@ -434,7 +434,13 @@ This topic is a bit advanced for this project, a separate project is needed for 
 
 Include a local image ([image source](https://unsplash.com/photos/sun-light-passing-through-green-leafed-tree-EwKXn5CapA4)):
 
-The code '![test image](/data/img3783small.jpeg)' renders as:
+The code 
+
+```
+        ![test image](/data/img3783small.jpeg)
+```
+
+renders:
 
 ![test image](/docs/projects/data/img3783small.jpeg)
 
