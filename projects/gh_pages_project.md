@@ -436,7 +436,7 @@ Include a local image ([image source](https://unsplash.com/photos/sun-light-pass
 
 {% raw %}
 ```
-![test image]({% link data/img3783small.jpeg %})
+![test image](/data/img3783small.jpeg)
 ```
 {% endraw %}
 
