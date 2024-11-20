@@ -436,9 +436,11 @@ Include a local image ([image source](https://unsplash.com/photos/sun-light-pass
 
 The code 
 
+{% raw %}
 ```
         ![test image](/data/img3783small.jpeg)
 ```
+{% endraw %}
 
 renders:
 
