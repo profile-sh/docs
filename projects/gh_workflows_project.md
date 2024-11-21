@@ -200,7 +200,6 @@ jobs:
           echo ${{github.env}} 
           echo done with workflow 
 ```
-
 </detail>
 
 Follow the same steps as above to run the workflow and look at the run log. 
