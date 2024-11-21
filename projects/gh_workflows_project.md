@@ -142,7 +142,7 @@ Follow the same steps as above to run the workflow and look at the run log.
 
 - create a workflow w03_env_context.yml in the repo call-reusable-workflows
 - paste the following content in it and commit:
-- 
+
 {% raw %} 
 ```yaml
 name: w03_env_context demo using env context
