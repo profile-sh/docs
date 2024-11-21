@@ -127,7 +127,7 @@ job1:
 
 Follow the same steps as above to run the workflow and look at the run log. 
 
-## env context
+## 2. env context
 
 > [!IMPORTANT]
 > The env context can be defined at all levels (top, job, or step).
@@ -140,71 +140,71 @@ Follow the same steps as above to run the workflow and look at the run log.
 <summary>code</summary>
   
 ```yaml
-name: w03_env_context demo using env context
-on:
-  workflow_dispatch
-env:  
-  globalvar: globalvar_value
-jobs:
-  job1:
-    name: j1 use env context in a job
-    runs-on: ubuntu-latest
-    env: 
-      jobvar: jobvar_value
-    steps:
-      - name: update env variables
-        env: 
-          stepvar1: stepvar1_value
-          stepvar2: stepvar2_value
-        run: |
-          echo 'stepvar1, stepvar2, jobvar, and globalvar all are available in this step'
-          echo 'we can access env vars with or without env context prefix:'
-          echo $stepvar1 $jobvar $globalvar 
-          echo ${{ env.stepvar1 }} ${{ env.jobvar }} ${{ env.globalvar }}
-          echo let us update values
-          echo pushing the var to the env file GITHUB_ENV changes the scope from step to job level
-          echo stepvar2=stepvar2_new_value >> $GITHUB_ENV
-          echo jobvar=jobvar_new_value >> $GITHUB_ENV
-          echo globalvar=globalvar_new_value >> $GITHUB_ENV 
-          echo The updated values will be available in the next step, not this step.
-          echo see the updated values are not available in this step:
-          echo ${{ env.stepvar1 }} 
-          echo ${{ env.stepvar2 }} 
-          echo ${{ env.jobvar }} 
-          echo ${{ env.globalvar }}            
-      - name: test updated env variables 
-        run: |
-          echo all updated values are available and stepvar1 is not available here
-          echo ${{ env.stepvar1 }} 
-          echo ${{ env.stepvar2 }} 
-          echo ${{ env.jobvar }} 
-          echo ${{ env.globalvar }}  
-  job2:
-    name: j2 show env vars behaviour across jobs
-    runs-on: ubuntu-latest
-    # To check if the previous job has any effect on env context, we want job1 to finish before we start this job
-    needs: job1
-    steps:
-      - name: test env variables
-        run: |
-          echo stepvar1, stepvar2, and jobvar are not available acrosss jobs because each job executes with its own env context
-          echo global variable is available but the update done in another job will not affect it.
-          echo ${{ env.stepvar1 }} 
-          echo ${{ env.stepvar2 }} 
-          echo ${{ env.jobvar }} 
-          echo ${{ env.globalvar }} 
-      - name: GITHUB_ENV and github.env are the same
-        run: |
-          echo GITHUB_ENV and github.env give path of the file that stores env variables, this path is unique for each step
-          echo $GITHUB_ENV 
-          echo ${{github.env}} 
-          echo done with workflow 
+        name: w03_env_context demo using env context
+        on:
+          workflow_dispatch
+        env:  
+          globalvar: globalvar_value
+        jobs:
+          job1:
+            name: j1 use env context in a job
+            runs-on: ubuntu-latest
+            env: 
+              jobvar: jobvar_value
+            steps:
+              - name: update env variables
+                env: 
+                  stepvar1: stepvar1_value
+                  stepvar2: stepvar2_value
+                run: |
+                  echo 'stepvar1, stepvar2, jobvar, and globalvar all are available in this step'
+                  echo 'we can access env vars with or without env context prefix:'
+                  echo $stepvar1 $jobvar $globalvar 
+                  echo ${{ env.stepvar1 }} ${{ env.jobvar }} ${{ env.globalvar }}
+                  echo let us update values
+                  echo pushing the var to the env file GITHUB_ENV changes the scope from step to job level
+                  echo stepvar2=stepvar2_new_value >> $GITHUB_ENV
+                  echo jobvar=jobvar_new_value >> $GITHUB_ENV
+                  echo globalvar=globalvar_new_value >> $GITHUB_ENV 
+                  echo The updated values will be available in the next step, not this step.
+                  echo see the updated values are not available in this step:
+                  echo ${{ env.stepvar1 }} 
+                  echo ${{ env.stepvar2 }} 
+                  echo ${{ env.jobvar }} 
+                  echo ${{ env.globalvar }}            
+              - name: test updated env variables 
+                run: |
+                  echo all updated values are available and stepvar1 is not available here
+                  echo ${{ env.stepvar1 }} 
+                  echo ${{ env.stepvar2 }} 
+                  echo ${{ env.jobvar }} 
+                  echo ${{ env.globalvar }}  
+          job2:
+            name: j2 show env vars behaviour across jobs
+            runs-on: ubuntu-latest
+            # To check if the previous job has any effect on env context, we want job1 to finish before we start this job
+            needs: job1
+            steps:
+              - name: test env variables
+                run: |
+                  echo stepvar1, stepvar2, and jobvar are not available acrosss jobs because each job executes with its own env context
+                  echo global variable is available but the update done in another job will not affect it.
+                  echo ${{ env.stepvar1 }} 
+                  echo ${{ env.stepvar2 }} 
+                  echo ${{ env.jobvar }} 
+                  echo ${{ env.globalvar }} 
+              - name: GITHUB_ENV and github.env are the same
+                run: |
+                  echo GITHUB_ENV and github.env give path of the file that stores env variables, this path is unique for each step
+                  echo $GITHUB_ENV 
+                  echo ${{github.env}} 
+                  echo done with workflow 
 ```
 </detail>
 
 Follow the same steps as above to run the workflow and look at the run log. 
 
-## inputs context
+## 3. inputs context
 
 tbc
 
