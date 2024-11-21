@@ -1,6 +1,6 @@
 /*
 This code was copied from gh-pages leap-day theme for the sidebar funcrionality. The only modification is to show only h1 and h2 in the sidebar (not h3).
-This code is used in the layout default_custom.liquid (based on default.liquid from cayman theme)
+This code is used in the layout default_custom.liquid (based on default.liquid from leap-day theme)
 */
 
 var sectionHeight = function() {
