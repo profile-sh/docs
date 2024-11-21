@@ -1,6 +1,6 @@
 title: Docs for various projects
 author: sha
-description: Bookmark for updates!
-remote_theme: pages-themes/cayman
+remote_theme: pages-themes/leap-day
+show_banner: false
 plugins:
 - jekyll-remote-theme
