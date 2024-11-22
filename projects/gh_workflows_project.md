@@ -7,7 +7,7 @@ author: {{site.author}}
 date: 18-11-2024
 ---
 
-Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. This project is an example focused walk through of  GitHub workflows and actions. We will create and use several workflows, reusable-workflows, and composite actions to understand the GitHub workflow syntax. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help. 
+Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. In this project, we will create and use several workflows, reusable-workflows, and composite actions to understand the GitHub workflow syntax. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help. 
   
 ## 1. Workflow setup
 
@@ -388,7 +388,13 @@ Run the workflow and look at the run log.
 
 ## 4. *secrets* and *vars* contexts
 
-tbc
+## 5. Other contexts and default variables
+
+## 6. Calling a composite action from a reusable workflow
+
+## 7. Files and scripts
+
+
 
 
 
