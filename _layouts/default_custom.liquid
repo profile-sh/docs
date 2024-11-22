@@ -1,6 +1,7 @@
 <!-- default.liquid from leap-day but with: 
-banner disabled, using site.show_banner=false 
-inline style for ul element under nav (for sidebar)  <ul style="text-align:left;"></ul>
+Banner disabled, using site.show_banner=false 
+Inline style for ul element under nav (for sidebar)  <ul style="text-align:left;"></ul>
+Inline style (otherwise padding was zero on mobile device) for <section> wrapping content 
 also is using modified assets/js/main.js to show only h1 and h2 in the sidebar
 -->
 <!doctype html>
@@ -46,7 +47,7 @@ also is using modified assets/js/main.js to show only h1 and h2 in the sidebar
       <nav>
         <ul style="text-align:left;"></ul>
       </nav>
-      <section>
+      <section style="padding-left:1px;padding-right:1px;">
         {{ content }}
 
       </section>
