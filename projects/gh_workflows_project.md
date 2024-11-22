@@ -7,7 +7,7 @@ author: {{site.author}}
 date: 18-11-2024
 ---
 
-Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. This project is an example focused walk through of  GitHub workflows and actions. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help.
+Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. This project is an example focused walk through of  GitHub workflows and actions. We will create and use several workflows, reusable-workflows, and composite actions to understand the GitHub workflow syntax. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help. 
   
 ## 1. Workflow setup
 
@@ -15,13 +15,13 @@ We need a public organization and two repos under it:
 
 ### 1.1 Exercise: Create workflow repos
 
-- create a public organization named gh-workflows-project and under the organization:
-- create a public repo named call-reusable-workflows and create the following directories:
+- create a public organization named gh-workflows-project
+- under the organization, create a public repo named call-reusable-workflows and create the following directories:
   - .github
   - .github/workflows
 - create a public repo named reusable-workflows and repeat create directories as above. Also, in this repo, create an additional directory named .github/composite-actions
 
-> All our workflows must be in the directory .github/workflows, without any subdirectories.
+> Workflow files must be directly under .github/workflows, not under any subdirectories.
 
 ### 1.2 Exercise: Create a workflow
 
@@ -111,8 +111,8 @@ steps:
 ```
 {% endraw %}
 
-> A **composite action** must be in its own directory with the same name as the **action** name. For example, for an action named my_action it looks like my_action/action.yml.
-> An action is called from a **step** of a job and it cannot have jobs within it, it may have several steps.
+> A **composite action** must be in its own directory with the same name as the action name. For example, for an action named my_action it looks like my_action/action.yml.
+> An action is called from a **step** of a job and cannot have jobs within it, it may have several steps.
 
 ### 1.7 Exercise: Create a workflow to call the composite action
 
@@ -138,8 +138,8 @@ Follow the same steps as above to run the workflow and look at the run log.
 
 ## 2. *env* context
 
-> The env context can be defined at all levels (top, job, or step).
-> The env context cannot be used under the *id* and *uses* keys, elsewhere it is available.
+> The **env** context can be defined at all levels (root, job, or step).
+> The **env** context cannot be used under the **id** and **uses** keys, elsewhere it is available.
 
 Exercise:
 - create a workflow w03_env.yml in the repo call-reusable-workflows
@@ -213,10 +213,15 @@ Follow the same steps as above to run the workflow and look at the run log. The 
 
 ## 3. *inputs* and *outputs* contexts
 
-While env context is very useful *within* a workflow or action, how do we pass information *between* workflows? We will learn it below.
+While *env* context is very useful *within* a workflow or action, how do we pass information *between* workflows? We will learn it below.
 
 > The **iputs** context is used to pass user defined variables **from the caller** to the callee workflows and actions.
-> The **outputs** context is useful to pass information **from the callee** workflow or action to the caller workflow.
+> The **outputs** context is used to pass information **from the callee** workflow or action to the caller workflow.
+> To work with outputs, we have to use **GITHUB_OUPUTS**, a github default variable for the step dependent path to the file that saves outputs.
+
+In the following subsections we learn how to use the inputs and ouputs contexts in a reusable workflow and a composite action.
+
+### 3.1 Reusable workflow
 
 Exercise: Create a reusable workflow:
 - create a reusasble workflow rw04_inputs_outputs.yml in the repo reusable-workflows
@@ -307,10 +312,83 @@ jobs:
 
 Run the workflow and look at the run log. 
 
+### 3.2 Composite action
+
+Exercise: How do we pass information between a caller workflow and an action? Can you create a demo?
+
+Here is a demo:
+
+- create a composite action a05_inputs_outputs in the repo reuasble-workflows
+- paste the following content in it and commit:
+  
+{% raw %} 
+```yaml
+name:  a05_inputs_outputs using inputs and outputs in a composite action
+description: 'use input, give output'
+inputs:
+  input1:
+    required: true  # if 'required' is 'false', set a default value using default: somevalue
+    type: string
+outputs:
+  an_output:
+    description: "an output"
+    value: ${{ steps.step1.outputs.output1 }}
+  another_output:
+    description: "another output"
+    value: ${{ steps.step1.outputs.output2 }}
+runs:
+  using: "composite"
+  steps:
+    - name: set outputs
+      shell: bash
+      id: step1
+      run: |
+        echo "output1=i am an out" >> $GITHUB_OUTPUT
+        echo "output2=i am another output" >> $GITHUB_OUTPUT
+      
+    - name: use output from previous step 
+      shell: bash
+      id: step2
+      run: |
+        echo ${{ inputs.input1 }}
+        echo ${{steps.step1.outputs.output1}}
+        echo done with action
+```
+{% endraw %} 
+
+Exercise: Create a workflow to call the above action.
+
+- create a workflow w05_inputs_outputs.yml in the repo call-reuasble-workflows.
+- paste the following content in it and commit:
+
+{% raw %} 
+```yaml
+name: w05_inputs_outputs call a composite action with inputs and outputs 
+on:
+  workflow_dispatch
+jobs:    
+  job1:
+    name: j1 pass output between steps of a job using a composite action
+    runs-on: ubuntu-latest
+    steps:
+      - name: step1 call action and create output
+        id: step1
+        uses: gh-workflows-project/reusable-workflows/.github/composite-actions/a05_inputs_outputs@main
+        with:
+          input1: an_input
+      - name: use output from previous step
+        run: |
+         echo ${{steps.step1.outputs.an_output}}
+         echo ${{steps.step1.outputs.another_output}}
+         echo workflow done
+```
+{% endraw %}
+
+Run the workflow and look at the run log. 
+
 ## 4. *secrets* and *vars* contexts
 
-<!-- Exercise: Create a caller workflow w04_inputs_outputs.yml in the repo call-reuasble-workflows. We may copy the code of the workflow w01_hello.yml and edit only the name of the reusable workflow under the *uses* key from rw01_hello.yml to rw04_inputs_outputs.yml. 
--->
+tbc
 
 
 
