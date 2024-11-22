@@ -81,7 +81,7 @@ job1:
 
 {% raw %} 
 ```yml
-name: w01 call a reusable workflow 
+name: w01_hello call a reusable workflow 
 on:
 workflow_dispatch
 jobs:   
@@ -95,12 +95,12 @@ Follow the same steps as above to run the workflow and look at the run log.
 
 ### 1.6 Exercise: Create a composite action
 
-- create our first *composite action* file a01_hello/action.yml in the repo reusable-workflows under .github/composite-actions
+- create our first *composite action* file a02_hello/action.yml in the repo reusable-workflows under .github/composite-actions
 - paste the following content in it and commit:
 
 {% raw %} 
 ```yml
-name: a01_hello action
+name: a02_hello action
 description: Just say hello
 runs:
 using: "composite"
@@ -111,7 +111,8 @@ steps:
 ```
 {% endraw %}
 
-> A *composite action* must be in its own directory with the same name as the *action* name. For example, for an action named my_action it looks like my_action/action.yml.
+> A **composite action** must be in its own directory with the same name as the **action** name. For example, for an action named my_action it looks like my_action/action.yml.
+> An action is called from a **step** of a job and it cannot have jobs within it, it may have several steps.
 
 ### 1.7 Exercise: Create a workflow to call the composite action
 
@@ -120,7 +121,7 @@ steps:
 
 {% raw %} 
 ```yml
-name: w02 call a composite action
+name: w02_hello call a composite action
 on:
 workflow_dispatch
 jobs:   
@@ -129,23 +130,24 @@ job1:
   name: j1 call a composite action
   steps:
     - name: call the action
-      uses: gh-workflows-project/reusable-workflows/.github/composite-actions/a01_hello@main
+      uses: gh-workflows-project/reusable-workflows/.github/composite-actions/a02_hello@main
 ```
 {% endraw %}
 
 Follow the same steps as above to run the workflow and look at the run log. 
 
-## 2. env context
+## 2. *env* context
 
 > The env context can be defined at all levels (top, job, or step).
 > The env context cannot be used under the *id* and *uses* keys, elsewhere it is available.
 
-- create a workflow w03_env_context.yml in the repo call-reusable-workflows
+Exercise:
+- create a workflow w03_env.yml in the repo call-reusable-workflows
 - paste the following content in it and commit:
 
 {% raw %} 
 ```yaml
-name: w03_env_context demo using env context
+name: w03_env demo using env context
 on:
   workflow_dispatch
 env:  
@@ -207,9 +209,108 @@ jobs:
 ```
 {% endraw %}
 
-Follow the same steps as above to run the workflow and look at the run log. 
+Follow the same steps as above to run the workflow and look at the run log. The usage of env context in an *action* is not different and we do not need a separate example.
 
-## 3. inputs context
+## 3. *inputs* and *outputs* contexts
 
-tbc
+While env context is very useful *within* a workflow or action, how do we pass information *between* workflows? We will learn it below.
+
+> The **iputs** context is used to pass user defined variables **from the caller** to the callee workflows and actions.
+> The **outputs** context is useful to pass information **from the callee** workflow or action to the caller workflow.
+
+Exercise: Create a reusable workflow:
+- create a reusasble workflow rw04_inputs_outputs.yml in the repo reusable-workflows
+- paste the following content in it and commit:
+
+{% raw %} 
+```yaml
+name: rw04_inputs_outputs a reusable workflow with inputs and outputs 
+on:
+  workflow_call:
+    inputs:
+      input1:
+        required: true  # if 'required' is 'false', set a default value using default: somevalue
+        type: string 
+      input2:
+        required: true  # if 'required' is 'false', set a default value using default: somevalue
+        type: string
+    outputs:
+      an_output:
+        description: "An output"
+        value: ${{ jobs.set_outputs.outputs.output1 }}
+      another_output:
+        description: "Another output"
+        value: ${{ jobs.set_outputs.outputs.output2 }}
+jobs:
+  set_outputs:
+    name: Generate output
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.step1.outputs.output1 }}
+      output2: ${{ steps.step2.outputs.output2 }}
+    steps:
+      - id: step1
+        run: echo "output1=I am an output" >> $GITHUB_OUTPUT
+      - id: step2
+        run: echo "output2=I am another output" >> $GITHUB_OUTPUT
+  print_to_console: # just verify inputs and outputs
+   name: print inputs and ouputs
+   runs-on: ubuntu-latest
+   needs: [set_outputs]
+   steps:
+    - run: echo '${{ toJSON(inputs) }}'
+    - run: echo '${{ toJSON(needs.set_outputs.outputs) }}'
+    - run: echo done with reusable workflow
+```
+{% endraw %}
+
+Now we need to call the above reusable workflow:
+
+Exercise: Create a workflow to pass inputs to the reusable workflow and use outputs from the reusable workflow.
+- create a workflow w04_inputs_outputs.yml in the repo call-reuasble-workflows.
+- paste the following content in it and commit:
+
+{% raw %} 
+```yaml
+name: w04_inputs_outputs call a reusable workflow with inputs and outputs 
+on:
+  workflow_dispatch
+jobs:   
+  job1: 
+    name: j1 call reusable workflow
+    uses: gh-workflows-project/reusable-workflows/.github/workflows/rw04_inputs_outputs.yml@main
+    with:
+     input1: an_input
+     input2: another_input
+  job2:
+    name: j2 use output from j1
+    runs-on: ubuntu-latest
+    needs: job1 # start only after job1 is done
+    steps:
+      - name: use output from a completed job
+        run: |
+          echo ${{ needs.job1.outputs.an_output }} 
+          echo ${{ needs.job1.outputs.another_output }}  
+  job3:
+    name: j3 pass output between steps of a job
+    runs-on: ubuntu-latest
+    steps:
+      - name: step1 create output
+        id: step1
+        run: echo "output=myoutput" >> $GITHUB_OUTPUT 
+      - name: use output from previous step
+        run: |
+         echo ${{steps.step1.outputs.output}}
+         echo workflow done
+```
+{% endraw %}
+
+Run the workflow and look at the run log. 
+
+## 4. *secrets* and *vars* contexts
+
+<!-- Exercise: Create a caller workflow w04_inputs_outputs.yml in the repo call-reuasble-workflows. We may copy the code of the workflow w01_hello.yml and edit only the name of the reusable workflow under the *uses* key from rw01_hello.yml to rw04_inputs_outputs.yml. 
+-->
+
+
 
