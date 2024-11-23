@@ -213,7 +213,7 @@ Follow the same steps as above to run the workflow and look at the run log. The 
 
 ## 3. *inputs* and *outputs* contexts
 
-While *env* context is very useful *within* a workflow or action, how do we pass information *between* workflows? We will learn it below.
+While *env* context is very useful *within* a workflow or action, how do we pass information *across* workflows, action? We will learn it below.
 
 > The **iputs** context is used to pass user defined variables **from the caller** to the callee workflows and actions.
 > The **outputs** context is used to pass information **from the callee** workflow or action to the caller workflow.
@@ -318,7 +318,7 @@ Exercise: How do we pass information between a caller workflow and an action? Ca
 
 Here is a demo:
 
-- create a composite action a05_inputs_outputs in the repo reuasble-workflows
+- create a composite action a05_inputs_outputs/action.yml in the repo reuasble-workflows
 - paste the following content in it and commit:
   
 {% raw %} 
@@ -388,8 +388,173 @@ Run the workflow and look at the run log.
 
 ## 4. *secrets* and *vars* contexts
 
-## 5. Other contexts and default variables
+Secrets and variables may be attached to a repo, an organization, or a repo environment attached to the repo. In a workflow, we use the contexts *secrets* and *vars* to access these values.
+ 
+Sometimes we have variables that have same values for all repos under an organization or for all workflows under a repo. The repo and organization secrets and variables have to be attached to the caller workflow repo and its parent organization. The *environment* secrets and variables have to be stored in an *environment* created in the repo of the caller workflow. 
 
+> The *env* context (discussed in the previous section) and the *environment* (subject of this section) have completely different purpose and functionality.
+> Whether we store a variable in a repo, organization, or a *repo environment*, we can access it using *vars* context like vars.[the variable name]. Same is true for secrets. There is no mention of repo/organization/environment when accessing the values of the correspoding variables and secrets.
+> We must explicitly pass secrets to reusable workflows and actions, variables are passed by default to a reusable workflows but not to actions.
+> The secrets and variables stored under a *repo environment* are accessible only if we use/activate that particular *environment* in a workflow.
+
+### 4.1 Create secrets and variables
+
+Let us create the secrets and variables we need for this demo.
+
+Exercise: Create a secret for the repo call-reusable-workflows and a secret for its parent organization (gh-workflows-project):
+
+- visit the root folder of the repo
+- click on repo settings
+- on the left sidebar, click on the dropdown *Secrets and Variables*
+- click on *actions* under the dropdown
+- under *Repository secrets* click on *new repository secret* (We will talk about "Environment secrets" later)
+- create a secret with the name *repo_secret* and value my_repo_secret and click *add secret*
+- After adding secret you will see the secret name that we have added. On the same page, under *Organization secrets*, follow the steps and add a secret with the name *org_secret* and value my_org_secret.
+
+Exercise: The steps for creating the variables are similar:
+
+- create a variable for the repo and the organization with the names repo_var and org_var and values my_repo_var and my org_var.
+
+So far we have created secrets and variables for the caller workflow repo and its parent organization. For this demo, we also need to create two repo environments with a secret and a variable for each of the environments. A detailed discussion on the use cases of the repo environments is beyond the scope of this document.
+
+Exercise: Create two repo environments and the corresponding secrets and variables.
+
+- visit the page: repo settings -> Environments -> new environment
+- create an environment named dev
+- create a secret named environment_secret with value my_dev_secret
+- create a variable named environment_var with value my_dev_var
+- follow the same step as above but replace *dev* with *stage* everywhere
+
+ Our repo now has two environments, named *dev* and *stage*, with each of them having a variable and a secret.
+Great, our repo is equipped with all the secrets and variables we need for our demo.
+
+### 4.2 Workflows
+
+Below we show a demo to understand the usage of secrets and variables created under a repo, an organization, and repo environments.
+
+Exercise: Create a reusable workflow:
+
+- create a reusasble workflow rw06_secrets_vars.yml in the repo reusable-workflows
+- paste the following content in it and commit:
+
+{% raw %}
+```yml
+name: rw06_secrets_vars using secrets and variables in a reusable workflow
+on:
+  workflow_call:
+    secrets: # reusable workflows do not have direct access to secrets, we have to pass them from the caller
+      repo_s:
+        required: true
+      org_s:
+        required: true
+jobs:
+  use_secrets_and_vars:
+    runs-on: ubuntu-latest
+    steps:
+    # the sed 's/./& /g' is used to unmask a secret, use it only for dummy secrets
+      - run: |
+          ${{secrets.org_s=='orgsecret'}}  | sed 's/./& /g'
+          echo ${{secrets.org_s}} | sed 's/./& /g' 
+          echo ${{vars.repo_var}} # a variable defined at the repository level
+          echo ${{vars.org_var}} # a variable defined at the organization level
+          echo reusable workflow done
+```
+{% endraw %}
+
+
+Exercise: Create a composite-action
+
+- create a composite action a06_secrets_vars/action.yml in the repo reuasble-workflows
+- paste the following content in it and commit:
+
+{% raw %}
+```yml
+name: a06_secrets_vars using secrets and variables in a composite action
+description: For composite actions we have to pass secrets and vars as input from the caller, unlike a reusable workflow where secrets are passed as secrets
+inputs:
+  repo_s:
+    required: true  # if 'required' is 'false', set a default value using default: somevalue
+    type: string
+  org_s:
+    required: true  
+    type: string
+  repo_v:
+    required: true  
+    type: string
+  org_v:
+    required: true  
+    type: string
+runs:
+  using: "composite"
+  steps:
+    - name: print secrets and vars that were passed as input
+      shell: bash
+      run: |
+        echo ${{ inputs.repo_s }} | sed 's/./& /g' # sed command unmasks the secrets, use only for dummy secrets and demos.
+        echo ${{ inputs.org_s }} | sed 's/./& /g'
+        echo ${{ inputs.repo_v }}
+        echo ${{ inputs.org_v }}
+        echo done with action
+```
+{% endraw %}
+
+Exercise: Create a workflow to call the above reusable workflow and action.
+
+- create a workflow w06_secrets_vars.yml in the repo call-reuasble-workflows.
+- paste the following content in it and commit:
+
+{% raw %}
+```yml
+# We must explicitly pass secrets to reusable workflows and actions, variables are passed by default to workflows but not to actions.
+name: w06_secrets_vars context test reusable workflow and action with secrets and variables
+on:
+  workflow_dispatch
+jobs:
+  job1:
+    name: j1 Test secrets_and_vars reusable workflow 
+    uses: gh-workflows-project/reusable-workflows/.github/workflows/rw06_secrets_vars.yml@main
+    secrets: # We have to explicitly pass secrets from the caller, however vars do not need explicit passing
+      repo_s: ${{ secrets.repo_secret }}       
+      org_s: ${{ secrets.org_secret }}    
+  job2:
+    name: j2 Test secrets_and_vars using an action
+    runs-on: ubuntu-latest
+    steps:
+      - name: call the action in this step
+        uses: gh-workflows-project/reusable-workflows/.github/composite-actions/a06_secrets_vars@main
+        with: # we cannot really pass secrets as secrets to an action, passing as inputs works as 
+              # they are masked even when passed as an input. We also HAVE to pass vars as input
+          repo_s: ${{secrets.repo_secret}}       
+          org_s: ${{secrets.org_secret}}
+          repo_v: ${{vars.repo_var}}       
+          org_v: ${{vars.org_var}}
+  job3:
+    name: j3 test dev environment 
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - run: |
+          echo ${{vars.environment_var}}
+          echo ${{vars.environment_secret}}  | sed 's/./& /g'  
+  job4:
+    name: j4 test stage environment 
+    runs-on: ubuntu-latest
+    environment:
+      name: stage
+    steps:
+      - run: |
+          echo ${{vars.environment_var}}
+          echo ${{vars.environment_secret}}  | sed 's/./& /g'
+          echo workflow done
+```
+{% endraw %}
+
+Run the workflow and look at the run logs.
+Let us explore other contexts in the next section.
+
+## 5. Other contexts and default variables
+working on it.
 ## 6. Calling a composite action from a reusable workflow
 
 ## 7. Files and scripts
