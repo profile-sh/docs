@@ -392,9 +392,12 @@ Secrets and variables may be attached to a repo, an organization, or a repo envi
  
 Sometimes we have variables that have same values for all repos under an organization or for all workflows under a repo. The repo and organization secrets and variables have to be attached to the caller workflow repo and its parent organization. The *environment* secrets and variables have to be stored in an *environment* created in the repo of the caller workflow. 
 
-> The *env* context (discussed in the previous section) and the *environment* (subject of this section) have completely different purpose and functionality.
+> The *env* context and the *environment* (subject of this section) have completely different purpose and functionality.
+
 > Whether we store a variable in a repo, organization, or a *repo environment*, we can access it using *vars* context like vars.[the variable name]. Same is true for secrets. There is no mention of repo/organization/environment when accessing the values of the correspoding variables and secrets.
+
 > We must explicitly pass secrets to reusable workflows and actions, variables are passed by default to a reusable workflows but not to actions.
+
 > The secrets and variables stored under a *repo environment* are accessible only if we use/activate that particular *environment* in a workflow.
 
 ### 4.1 Create secrets and variables
