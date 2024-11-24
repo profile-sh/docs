@@ -7,9 +7,9 @@ author: {{site.author}}
 date: 18-11-2024
 ---
 
-Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. In this project, we will create and use several workflows, reusable-workflows, and composite actions to understand the GitHub workflow syntax. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help. 
+Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. In this project, we will create and use several workflows, reusable-workflows, and composite-actions to understand the GitHub workflow syntax. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help. 
 
-Here discuss basic contexts used in workflows and actions. Visit [context](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#about-contexts) and [default variables](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables) docs for a complete reference. 
+Private repositories and organizations are beyong the scope of this document. We discuss basic contexts used in workflows and actions. Visit [context](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#about-contexts) and [default variables](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables) docs for a complete reference. 
   
 ## 1. Workflow setup
 
@@ -95,9 +95,9 @@ job1:
 
 Follow the same steps as above to run the workflow and look at the run log. 
 
-### 1.6 Exercise: Create a composite action
+### 1.6 Exercise: Create a composite-action
 
-- create our first *composite action* file a02_hello/action.yml in the repo reusable-workflows under .github/composite-actions
+- create our first *composite-action* file a02_hello/action.yml in the repo reusable-workflows under .github/composite-actions
 - paste the following content in it and commit:
 
 {% raw %} 
@@ -108,28 +108,28 @@ runs:
 using: "composite"
 steps:
   - name: say hello
-    shell: bash # we have to set shell explicitly in a composite action
+    shell: bash # we have to set shell explicitly in a composite-action
     run: echo hello
 ```
 {% endraw %}
 
-> A **composite action** must be in its own directory with the same name as the action name. For example, for an action named my_action it looks like my_action/action.yml.
+> A **composite-action** must be in its own directory with the same name as the action name. For example, for an action named my_action it looks like my_action/action.yml.
 > An action is called from a **step** of a job and cannot have jobs within it, it may have several steps.
 
-### 1.7 Exercise: Create a workflow to call the composite action
+### 1.7 Exercise: Create a workflow to call the composite-action
 
 - create a workflow w02_hello.yml in the repo call-reusable-workflows
 - paste the following content in it and commit:
 
 {% raw %} 
 ```yml
-name: w02_hello call a composite action
+name: w02_hello call a composite-action
 on:
 workflow_dispatch
 jobs:   
 job1:
   runs-on: ubuntu-latest
-  name: j1 call a composite action
+  name: j1 call a composite-action
   steps:
     - name: call the action
       uses: gh-workflows-project/reusable-workflows/.github/composite-actions/a02_hello@main
@@ -221,7 +221,7 @@ While *env* context is very useful *within* a workflow or action, how do we pass
 > The **outputs** context is used to pass information **from the callee** workflow or action to the caller workflow.
 > To work with outputs, we have to use **GITHUB_OUPUTS**, a github default variable for the step dependent path to the file that saves outputs.
 
-In the following subsections we learn how to use the inputs and ouputs contexts in a reusable workflow and a composite action.
+In the following subsections we learn how to use the inputs and ouputs contexts in a reusable workflow and a composite-action.
 
 ### 3.1 Reusable workflow
 
@@ -314,18 +314,18 @@ jobs:
 
 Run the workflow and look at the run log. 
 
-### 3.2 Composite action
+### 3.2 composite-action
 
 Exercise: How do we pass information between a caller workflow and an action? Can you create a demo?
 
 Here is a demo:
 
-- create a composite action a05_inputs_outputs/action.yml in the repo reuasble-workflows
+- create a composite-action a05_inputs_outputs/action.yml in the repo reuasble-workflows
 - paste the following content in it and commit:
   
 {% raw %} 
 ```yaml
-name:  a05_inputs_outputs using inputs and outputs in a composite action
+name:  a05_inputs_outputs using inputs and outputs in a composite-action
 description: 'use input, give output'
 inputs:
   input1:
@@ -365,12 +365,12 @@ Exercise: Create a workflow to call the above action.
 
 {% raw %} 
 ```yaml
-name: w05_inputs_outputs call a composite action with inputs and outputs 
+name: w05_inputs_outputs call a composite-action with inputs and outputs 
 on:
   workflow_dispatch
 jobs:    
   job1:
-    name: j1 pass output between steps of a job using a composite action
+    name: j1 pass output between steps of a job using a composite-action
     runs-on: ubuntu-latest
     steps:
       - name: step1 call action and create output
@@ -469,13 +469,13 @@ jobs:
 
 Exercise: Create a composite-action
 
-- create a composite action a06_secrets_vars/action.yml in the repo reuasble-workflows
+- create a composite-action a06_secrets_vars/action.yml in the repo reuasble-workflows
 - paste the following content in it and commit:
 
 {% raw %}
 ```yml
-name: a06_secrets_vars using secrets and variables in a composite action
-description: For composite actions we have to pass secrets and vars as input from the caller, unlike a reusable workflow where secrets are passed as secrets
+name: a06_secrets_vars using secrets and variables in a composite-action
+description: For composite-actions we have to pass secrets and vars as input from the caller, unlike a reusable workflow where secrets are passed as secrets
 inputs:
   repo_s:
     required: true  # if 'required' is 'false', set a default value using default: somevalue
@@ -600,7 +600,7 @@ Exercise: Repeat the above exercise for the repo reusable-workflows.
 
 We have the required scripts in place, let us write the workflows to run these scripts.
 
-Exercise: Using the code below, create a reusable workflow named rw07_scripts, in the repo rusable-workflows, that runs scripts that are in the caller workflow repo call-reusable-workflows. 
+Exercise: Using the code below, create a reusable workflow named rw07_scripts.yml, in the repo rusable-workflows. 
 
 {% raw %}
 ```yml
@@ -661,7 +661,7 @@ The above reusable workflow expects the script files are in the caller repo with
 
 We also want to be able to run scripts if the scripts are in the callee workflow repo. Let us do it using a composite-action:
 
-Exercise: Using the code below, create a composite-action named a07_scripts, in the repo reusable-workflows, that runs scripts that are in the same repo. 
+Exercise: Using the code below, create a composite-action named a07_scripts, in the repo reusable-workflows. It runs scripts that are in the same repo (reusable-workflows). 
 
 {% raw %}
 ```yml
@@ -713,9 +713,9 @@ runs:
 ```
 {% endraw %}
 
-The above composite-action expects the script files are in the repo with the file paths provided as inputs. Also the conposite-action directory depth is used in the script file path construction.
+The above composite-action expects the script files are in the composite-action repo with the file paths provided as inputs. Also the composite-action directory depth is used in the script file path construction.
 
-Last, we need a workflow to call the above reusable workflow and the composite-action.
+We need a workflow to call the above reusable workflow and the composite-action.
 
 Exercise: Using the code below, create a workflow named w07_scripts, in the repo call-reusable-workflows.
 
@@ -748,6 +748,179 @@ jobs:
 Run the above workflow and look at the run logs. Do you see a lot of hellos? Well done.
 
 ### Reading files
+
+Let us create two test data files, in the caller  workflow repo call-reusable-workflows, under ther root folder, with paths data/w08.json and data/w08.yml. Our goal is to write composite-actions to read these files and use the output from the composite-actions.
+
+We will first create two composite-action and then we will create a workflow to call these actions:
+
+Exercise: Using the code below, create a composite-action named a08_read_json_data, in the repo reusable-workflows. 
+
+{% raw %}
+```yml
+name: a08_read_json_data demo 
+description: Demo showing how to read a json file located in the caller workflow repo using two methods
+# 1. directly in shell using jq
+# 2. using javascript action: actions/github-script
+inputs:
+  file_path:
+    required: true 
+    type: string
+outputs:
+  data:
+    description: "json data"
+    value: ${{ steps.read_file.outputs.result }} 
+runs:
+  using: "composite"
+  steps:
+    - name: checkout file
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout: |
+          ${{inputs.file_path}}
+        sparse-checkout-cone-mode: false  
+    - name: read json directly in shell
+      shell: bash
+      run: |
+       myvar=$(jq '.' ${{ github.workspace }}/${{inputs.file_path}})
+       echo $myvar | jq '.level0.level1.level2'
+       myvar=$(jq '.level0.level1.level2.level3' ${{ github.workspace }}/${{inputs.file_path}})
+       echo $myvar | jq '.'
+    - name: call the javascript action to read a json file
+      uses: actions/github-script@v7
+      id: read_file
+      with:
+        script: |
+          try {
+            const fs = require('fs')
+            const jsonString = fs.readFileSync('${{ github.workspace }}/${{inputs.file_path}}')
+            var data = JSON.parse(jsonString)
+            // console.log(data)
+            // console.log(data.level0.level1.level2.level3.level4.list)
+            return data
+          } catch(err) {
+            core.error("Error json data")
+            core.setFailed(err)
+          }
+```
+{% endraw %}
+
+Let us create another composite-action, to read a yaml file:
+Exercise: Using the code below, create a composite-action named a08_read_yaml_data, in the repo reusable-workflows. 
+
+{% raw %}
+```yml
+name: a08_read_yaml_data demo
+description: Demo showing how to read a yaml file located in the caller workflow repo using two methods
+# 1. directly in shell using yq
+# 2. using javascript action: actions/github-script
+inputs:
+  file_path:
+    required: true 
+    type: string
+outputs:
+  data:
+    description: "json data"
+    value: ${{ steps.read_file.outputs.result }} 
+runs:
+  using: "composite"
+  steps:
+    - name: checkout file
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout: |
+          ${{inputs.file_path}}
+        sparse-checkout-cone-mode: false  
+    - name: read json directly in shell
+      shell: bash
+      run: |
+        myvar=$(yq '.level0.level1.level2.level3.level4.list[0]' ${{ github.workspace }}/${{inputs.file_path}})
+        echo $myvar
+    - name: install js-yaml
+      shell: bash
+      run: npm install js-yaml
+    - name: call the javascript action to read the file
+      uses: actions/github-script@v7
+      id: read_file
+      with:
+        script: |
+          try {
+            const yml = require('js-yaml')
+            const fs = require('fs')
+            const data = yml.load(fs.readFileSync('${{ github.workspace }}/${{inputs.file_path}}'))
+            // var data = JSON.parse(jsonString)
+             console.log(data)
+             console.log(data.level0.level1.level2.level3.level4.list)
+            return data
+          } catch(err) {
+            core.error("Error json data")
+            core.setFailed(err)
+          }
+```
+{% endraw %}
+
+The above two composite-actions expect the data files are in the caller workflow repo call-reusable-workflows with the file paths provided as inputs.
+
+We need a workflow to call the above composite-actions.
+
+Exercise: Using the code below, create a workflow named w08_read_data, in the repo call-reusable-workflows.
+
+{% raw %}
+```yml
+name: w08_read_data  use composite-actions to read a json and a yaml file located in this repo
+on:
+  workflow_dispatch
+jobs:   
+  job1:
+    name: read json
+    runs-on: ubuntu-latest
+    outputs:
+      data: ${{ steps.read_file.outputs.data }}
+    steps:
+      - name: call the action
+        id: read_file      
+        uses: gh-workflows-project/reusable-workflows/.github/composite-actions/a08_read_json_data@main
+        with:
+         file_path:  data/w08.json
+  job2:
+    name: read yaml
+    runs-on: ubuntu-latest
+    outputs:
+      data: ${{ steps.read_file.outputs.data }}
+    steps:
+      - name: call the action
+        id: read_file   
+        uses: gh-workflows-project/reusable-workflows/.github/composite-actions/a08_read_yaml_data@main
+        with:
+         file_path: data/w08.yml
+  job3: 
+    name: read output from the above jobs
+    runs-on: ubuntu-latest
+    needs: [job1,job2]
+    env:
+      json_file_data: ${{needs.job1.outputs.data}} 
+      yaml_file_data: ${{needs.job2.outputs.data}} 
+    steps:
+      - name: log output from json
+      # pay attention to use of single quotes.
+        run: | 
+          echo '${{env.json_file_data}}' | jq '.'
+          echo '${{env.json_file_data}}' | jq '.level0.level1.level2.level3.level4.list[0]'  
+          myvar=$(echo '${{env.json_file_data}}' | jq '.level0.level1.level2.level3.level4')
+          echo $myvar
+          echo $myvar | jq '.list'
+      - name: log output from yaml
+        run: | 
+          echo '${{env.yaml_file_data}}' | jq '.'
+          echo '${{env.yaml_file_data}}' | jq '.level0.level1.level2.level3.level4.list[0]'  
+          myvar=$(echo '${{env.yaml_file_data}}' | jq '.level0.level1.level2.level3.level4')
+          echo $myvar
+          echo $myvar | jq '.list'
+          echo All done
+```
+{% endraw %}
+
+Run the above workflow and look at the run logs. If you see no reds and lots of data, congratulations, we are all done. Happy CI/CD ❤️.
+
 
 
 
