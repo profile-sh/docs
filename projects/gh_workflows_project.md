@@ -4,7 +4,7 @@ title: GitHub Workflows
 description: GitHub workflows and actions
 giscus_comments: true
 author: {{site.author}}
-date: 18-11-2024
+date: 24-11-2024
 ---
 
 Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. In this project, we will create and use several workflows, reusable-workflows, and composite-actions to understand the GitHub workflow syntax. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help. 
