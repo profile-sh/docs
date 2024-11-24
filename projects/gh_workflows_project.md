@@ -8,6 +8,8 @@ date: 18-11-2024
 ---
 
 Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. In this project, we will create and use several workflows, reusable-workflows, and composite actions to understand the GitHub workflow syntax. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help. 
+
+Here discuss basic contexts used in workflows and actions. Visit [context](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#about-contexts) and [default variables](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables) docs for a complete reference. 
   
 ## 1. Workflow setup
 
@@ -556,11 +558,197 @@ jobs:
 Run the workflow and look at the run logs.
 Let us explore other contexts in the next section.
 
-## 5. Other contexts and default variables
-working on it.
-## 6. Calling a composite action from a reusable workflow
+## 5. Scripts, configurations, and data
 
-## 7. Files and scripts
+Often times, we need scripts, configurations, and data that we do not want to hard code within workflows and actions. This enhances the reusability of the workflows. In this section we demonstrate how to read files and run scripts using reusable workflows and composite-actions.
+
+Depending on our needs, the files may be in the caller workflow repo (call-reusable-workflows) or in the callee workflow/action repo (reusable-workflows). We will learn how to read files and run scripts that live in either of the repos.
+
+### Running scripts
+
+In this demo we will learn how to run a bash, python, or js script. Let us first create the script files:
+
+Exercise: Under the root folder of the repo call-reusable-workflows, create a folder named *scripts* and create the following files under the *scripts* folder:
+
+- hello.sh:
+  
+ {% raw %}
+```bash
+#!/usr/bin/env bash
+echo 'Hello, I live in a bash script'
+```
+{% endraw %} 
+
+- hello.py:
+
+ {% raw %}
+```python
+print("Hello, I live in a python script")
+```
+{% endraw %} 
+
+- hello.js
+  
+ {% raw %}
+```js
+const { exec } = require('node:child_process');
+module.exports = () => console.log('Hello, I live in a js script');
+```
+{% endraw %} 
+
+Exercise: Repeat the above exercise for the repo reusable-workflows.
+
+We have the required scripts in place, let us write the workflows to run these scripts.
+
+Exercise: Using the code below, create a reusable workflow named rw07_scripts, in the repo rusable-workflows, that runs scripts that are in the caller workflow repo call-reusable-workflows. 
+
+{% raw %}
+```yml
+name: rw07_scripts run scripts 
+on:
+  workflow_call:
+    inputs:
+      bash_script:
+        required: true 
+        type: string  
+      py_script:
+        required: true 
+        type: string
+      js_script:
+        required: true 
+        type: string  
+jobs:
+  job1:
+    name: run caller repo scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout file
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            ${{inputs.bash_script}}
+            ${{inputs.py_script}}
+            ${{inputs.js_script}}
+      # cone mode false means will checkout only the file/files mentioned in the path
+      # default is true which checks out repository root level files unnecessarily for our case
+          sparse-checkout-cone-mode: false 
+      - name: run a bash script
+        run: |
+          chmod +x ${{ github.workspace }}/${{inputs.bash_script}}
+          ${{ github.workspace }}/${{inputs.bash_script}}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: run a python script
+        run: python ${{ github.workspace }}/${{inputs.py_script}}
+      - name: run a js script
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const exec = require('${{ github.workspace }}/${{inputs.js_script}}')
+              exec()          
+              return "success"
+            } catch(err) {
+              core.error("Error json data")
+              core.setFailed(err)
+            }
+```
+{% endraw %}
+
+The above reusable workflow expects the script files are in the caller repo with the file paths provided as inputs.
+
+We also want to be able to run scripts if the scripts are in the callee workflow repo. Let us do it using a composite-action:
+
+Exercise: Using the code below, create a composite-action named a07_scripts, in the repo reusable-workflows, that runs scripts that are in the same repo. 
+
+{% raw %}
+```yml
+name: a07_scripts action
+description: call a script in the same repo as this action, with script path given relative to repo root
+inputs:
+  bash_script:
+    required: true 
+    type: string    
+  py_script:
+    required: true 
+    type: string
+  js_script:
+    required: true 
+    type: string  
+runs:
+  using: "composite"
+  steps:
+    - name: run a bash script
+      shell: bash
+      # The first two commands are anonymous, they run the script in the current shell, changes in environment sustain (e.g changing directory or defining env vars),
+      # and the script does not need to be executable in the first two commands.
+      # The third command (chmod ...) is required to run the fourth command which runs the  script in a new shell and any environmental changes made inside the 
+      # script are not propagated to the current shell.
+      run: |
+        source ${{github.action_path}}/../../../${{inputs.bash_script}}
+        . ${{github.action_path}}/../../../${{inputs.bash_script}}
+        chmod +x ${{github.action_path}}/../../../${{inputs.bash_script}}
+        ${{github.action_path}}/../../../${{inputs.bash_script}}
+    - name: Set up Python 
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: run a python script
+      shell: bash
+      run: python ${{github.action_path}}/../../../${{inputs.py_script}}
+    - name: run a js script
+      uses: actions/github-script@v7
+      with:
+        script: |
+          try {
+            const exec = require('${{github.action_path}}/../../../${{inputs.js_script}}')
+            exec()          
+            return "success"
+          } catch(err) {
+            core.error("Error json data")
+            core.setFailed(err)
+          }
+```
+{% endraw %}
+
+The above composite-action expects the script files are in the repo with the file paths provided as inputs. Also the conposite-action directory depth is used in the script file path construction.
+
+Last, we need a workflow to call the above reusable workflow and the composite-action.
+
+Exercise: Using the code below, create a workflow named w07_scripts, in the repo call-reusable-workflows.
+
+{% raw %}
+```yml
+name: w07_scripts demo showing how to run scripts
+on:
+  workflow_dispatch
+jobs:   
+  job1:
+    name: j1 call a reusable workflow to run the scripts that are in caller/this repo
+    uses: gh-workflows-project/reusable-workflows/.github/workflows/rw07_scripts.yml@main
+    with: # The scripts repo must be the caller workflow repo, file paths are relative to repo root
+      bash_script: scripts/hello.sh
+      py_script: scripts/hello.py
+      js_script: scripts/hello.js
+  job2:
+    name: j2 call a composite-action to run the scripts that are in the action repo
+    runs-on: ubuntu-latest
+    steps:
+      - name: call the action    
+        uses: gh-workflows-project/reusable-workflows/.github/composite-actions/a07_scripts@main
+        with: # The scripts repo must be the composite-action repo, file paths are relative to repo root
+          bash_script: scripts/hello.sh
+          py_script: scripts/hello.py
+          js_script: scripts/hello.js       
+```
+{% endraw %}
+
+Run the above workflow and look at the run logs. Do you see a lot of hellos? Well done.
+
+### Reading files
+
 
 
 
