@@ -9,7 +9,7 @@ date: 18-11-2024
 
 Software development involves several steps (installation, development, build, and deploy) that are repeated forever. GitHub workflows are a way to automate the software development cycle. In this project, we will create and use several workflows, reusable-workflows, and composite-actions to understand the GitHub workflow syntax. Visit [GitHub workflows and actions](https://docs.github.com/en/actions) for further help. 
 
-Private repositories and organizations are beyong the scope of this document. We discuss basic contexts used in workflows and actions. Visit [context](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#about-contexts) and [default variables](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables) docs for a complete reference. 
+Private repositories and organizations are beyond the scope of this document. We discuss basic contexts used in workflows and actions. Visit [context](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#about-contexts) and [default variables](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables) docs for a complete reference. 
   
 ## 1. Workflow setup
 
@@ -51,7 +51,7 @@ job1:
 - on left side menu click w1_hello
 - click the dropdown *Run workflow* on the right side
 - wait for the run to finish
-- click on w1_hello (it is next to green cricle with a tick mark) run log
+- click on w1_hello (it is next to green circle with a tick mark) run log
 - click the job name to see the run log
 
 If you see a red circle after the workflow run finishes, that means you have errors, clicking on the run log will show the errors.
@@ -189,14 +189,14 @@ jobs:
           echo ${{ env.jobvar }} 
           echo ${{ env.globalvar }}  
   job2:
-    name: j2 show env vars behaviour across jobs
+    name: j2 show env vars behavior across jobs
     runs-on: ubuntu-latest
     # To check if the previous job has any effect on env context, we want job1 to finish before we start this job
     needs: job1
     steps:
       - name: test env variables
         run: |
-          echo stepvar1, stepvar2, and jobvar are not available acrosss jobs because each job executes with its own env context
+          echo stepvar1, stepvar2, and jobvar are not available across jobs because each job executes with its own env context
           echo global variable is available but the update done in another job will not affect it.
           echo ${{ env.stepvar1 }} 
           echo ${{ env.stepvar2 }} 
@@ -217,16 +217,16 @@ Follow the same steps as above to run the workflow and look at the run log. The 
 
 While *env* context is very useful *within* a workflow or action, how do we pass information *across* workflows, action? We will learn it below.
 
-> The **iputs** context is used to pass user defined variables **from the caller** to the callee workflows and actions.
+> The **inputs** context is used to pass user defined variables **from the caller** to the callee workflows and actions.
 > The **outputs** context is used to pass information **from the callee** workflow or action to the caller workflow.
-> To work with outputs, we have to use **GITHUB_OUPUTS**, a github default variable for the step dependent path to the file that saves outputs.
+> To work with outputs, we have to use **GITHUB_OUTPUTS**, a github default variable for the step dependent path to the file that saves outputs.
 
-In the following subsections we learn how to use the inputs and ouputs contexts in a reusable workflow and a composite-action.
+In the following subsections we learn how to use the inputs and outputs contexts in a reusable workflow and a composite-action.
 
 ### 3.1 Reusable workflow
 
 Exercise: Create a reusable workflow:
-- create a reusasble workflow rw04_inputs_outputs.yml in the repo reusable-workflows
+- create a reusable workflow rw04_inputs_outputs.yml in the repo reusable-workflows
 - paste the following content in it and commit:
 
 {% raw %} 
@@ -261,7 +261,7 @@ jobs:
       - id: step2
         run: echo "output2=I am another output" >> $GITHUB_OUTPUT
   print_to_console: # just verify inputs and outputs
-   name: print inputs and ouputs
+   name: print inputs and outputs
    runs-on: ubuntu-latest
    needs: [set_outputs]
    steps:
@@ -274,7 +274,7 @@ jobs:
 Now we need to call the above reusable workflow:
 
 Exercise: Create a workflow to pass inputs to the reusable workflow and use outputs from the reusable workflow.
-- create a workflow w04_inputs_outputs.yml in the repo call-reuasble-workflows.
+- create a workflow w04_inputs_outputs.yml in the repo call-reusable-workflows.
 - paste the following content in it and commit:
 
 {% raw %} 
@@ -320,7 +320,7 @@ Exercise: How do we pass information between a caller workflow and an action? Ca
 
 Here is a demo:
 
-- create a composite-action a05_inputs_outputs/action.yml in the repo reuasble-workflows
+- create a composite-action a05_inputs_outputs/action.yml in the repo reusable-workflows
 - paste the following content in it and commit:
   
 {% raw %} 
@@ -360,7 +360,7 @@ runs:
 
 Exercise: Create a workflow to call the above action.
 
-- create a workflow w05_inputs_outputs.yml in the repo call-reuasble-workflows.
+- create a workflow w05_inputs_outputs.yml in the repo call-reusable-workflows.
 - paste the following content in it and commit:
 
 {% raw %} 
@@ -396,7 +396,7 @@ Sometimes we have variables that have same values for all repos under an organiz
 
 > The *env* context and the *environment* (subject of this section) have completely different purpose and functionality.
 
-> Whether we store a variable in a repo, organization, or a *repo environment*, we can access it using *vars* context like vars.[the variable name]. Same is true for secrets. There is no mention of repo/organization/environment when accessing the values of the correspoding variables and secrets.
+> Whether we store a variable in a repo, organization, or a *repo environment*, we can access it using *vars* context like vars.[the variable name]. Same is true for secrets. There is no mention of repo/organization/environment when accessing the values of the corresponding variables and secrets.
 
 > We must explicitly pass secrets to reusable workflows and actions, variables are passed by default to a reusable workflows but not to actions.
 
@@ -439,7 +439,7 @@ Below we show a demo to understand the usage of secrets and variables created un
 
 Exercise: Create a reusable workflow:
 
-- create a reusasble workflow rw06_secrets_vars.yml in the repo reusable-workflows
+- create a reusable workflow rw06_secrets_vars.yml in the repo reusable-workflows
 - paste the following content in it and commit:
 
 {% raw %}
@@ -469,7 +469,7 @@ jobs:
 
 Exercise: Create a composite-action
 
-- create a composite-action a06_secrets_vars/action.yml in the repo reuasble-workflows
+- create a composite-action a06_secrets_vars/action.yml in the repo reusable-workflows
 - paste the following content in it and commit:
 
 {% raw %}
@@ -505,7 +505,7 @@ runs:
 
 Exercise: Create a workflow to call the above reusable workflow and action.
 
-- create a workflow w06_secrets_vars.yml in the repo call-reuasble-workflows.
+- create a workflow w06_secrets_vars.yml in the repo call-reusable-workflows.
 - paste the following content in it and commit:
 
 {% raw %}
@@ -600,7 +600,7 @@ Exercise: Repeat the above exercise for the repo reusable-workflows.
 
 We have the required scripts in place, let us write the workflows to run these scripts.
 
-Exercise: Using the code below, create a reusable workflow named rw07_scripts.yml, in the repo rusable-workflows. 
+Exercise: Using the code below, create a reusable workflow named rw07_scripts.yml, in the repo reusable-workflows. 
 
 {% raw %}
 ```yml
@@ -749,7 +749,7 @@ Run the above workflow and look at the run logs. Do you see a lot of hellos? Wel
 
 ### Reading files
 
-Let us create two test data files, in the caller  workflow repo call-reusable-workflows, under ther root folder, with paths data/w08.json and data/w08.yml. Our goal is to write composite-actions to read these files and use the output from the composite-actions.
+Let us create two test data files, in the caller  workflow repo call-reusable-workflows, under the root folder, with paths data/w08.json and data/w08.yml. Our goal is to write composite-actions to read these files and use the output from the composite-actions.
 
 We will first create two composite-action and then we will create a workflow to call these actions:
 
