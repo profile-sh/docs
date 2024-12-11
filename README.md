@@ -8,4 +8,4 @@ permalink: /
 
 - [GitHub Pages](https://profile-sh.github.io/docs/projects/gh_pages)
 - [GitHub Workflows](https://profile-sh.github.io/docs/projects/gh_workflows)
-- [Jupyterlite Deployment](https://profile-sh.github.io/docs/projects/deploy_jupyterlite)
+- [Jupyterlite Demos](https://profile-sh.github.io/docs/projects/jupyterlite_demos)
