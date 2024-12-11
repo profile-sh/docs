@@ -32,10 +32,11 @@ As of today, for Jupyterlite-xeus:
   
 Demo repos: 
 
+This project has the following repos:
 - [using pyodide](https://github.com/jupyter-ed/jupyterlite-pyodide)
 - [using xeus](https://github.com/jupyter-ed/jupyterlite-xeus/tree/main)
 
-Acknowledgements and References:
+## Acknowledgements and References:
 
 Jupyterlite is a great addition to the Jupyter-family, the following resources were very helpful in writing this document:
 
