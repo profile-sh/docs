@@ -6,6 +6,6 @@ permalink: /
 ---
 ### Projects:
 
-- [GitHub pages](https://profile-sh.github.io/docs/projects/gh_pages)
-- [GitHub workflows](https://profile-sh.github.io/docs/projects/gh_workflows)
-- [Deploy jupyterlite](https://profile-sh.github.io/docs/projects/deploy_jupyterlite)
+- [GitHub Pages](https://profile-sh.github.io/docs/projects/gh_pages)
+- [GitHub Workflows](https://profile-sh.github.io/docs/projects/gh_workflows)
+- [Jupyterlite Deployment](https://profile-sh.github.io/docs/projects/deploy_jupyterlite)
