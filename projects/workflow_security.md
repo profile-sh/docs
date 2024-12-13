@@ -11,18 +11,17 @@ In CI/CD cycles, GitHub actions and workflows may need access to resources and s
 the outside services may need access to our resources on GitHub. It is very important to understand how to securely stitch 
 together services and resources (public or private) in the CI/CD workflows. 
 
->[!IMPORTANT]
+> !IMPORTANT
 > Even if not passed explicitly, GITHUB_TOKEN is available, through github context, to *all* the actions called in a workflow. Always set restrictive default permissions for the token (in the organization or repository settings) and elevate them using *permissions* key at specific locations in the workflow.
 
-> [!TIP]
-> Stay informed by reading/re-reading the [docs]
+> !TIP
 > When calling actions created by other people or organizations, use full length commit SHA of the called action.
 > Use actions from trusted sources (GitHub, or GitHub verified).
 > visit [GitHub docs](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions) for information about script injection and cross repo access.
 
 ## 1. GitHub Token
 
-Visit [GitHub docs] (https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication) 
+Visit [GitHub docs](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication) 
 for further reading, main points:
 
 - GitHub token, as the name suggests, is a *token* provided by GitHub.
@@ -96,28 +95,37 @@ jobs:
 
 ## 2. Personal Access Token (PAT)
 
-- PAT is configured at GitHub user profile level using *settings*,  access to repos is configurable.
-- PAT is used for remote access or to provide access to one or more repositories that may or may not be the caller-workflow-repo.
-- (PAT docs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+-  min life 1 day.
+- Do not use if not a necessity.
+- configured at GitHub user profile level using *settings*,  access to repos is configurable.
+- used for remote access or to provide access to one or more repositories that may or may not be the caller-workflow-repo.
+- [PAT docs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+
+## 4. Deploy keys
+
+- Specific to a repo
+- avoid if possible
+- no expiry
+- visit [docs](https://docs.github.com/en/enterprise-cloud@latest/authentication/connecting-to-github-with-ssh/managing-deploy-keys#deploy-keys).
 
 ## 3. GitHub OpenID Connect for AWS
 
 This is one of the methods to define access interface between AWS and GitHub. This is needed to provision resources on AWS.
 
 The aws official action aws-actions/configure-aws-credentials supports five methods for fetching credentials from AWS, 
-OpenID Connect is the recommended one as it gets short-lived credentials, enough for actions and workflows. Visit [configure-aws-credentials action docs](https://github.com/aws-actions/configure-aws-credentials?tab=readme-ov-file#oidc)
-and (GitHub docs](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#adding-the-identity-provider-to-aws) 
-for further reading. The AWS provided action also allows to limit access using inline policies as inputs.
+OpenID Connect is the recommended one as it gets short-lived credentials, good enough for actions and workflows. Visit [configure-aws-credentials action docs](https://github.com/aws-actions/configure-aws-credentials?tab=readme-ov-file#oidc)
+and [GitHub docs](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#adding-the-identity-provider-to-aws) for further reading. The AWS provided action also allows to limit access using inline policies as inputs.
 
-To configure GitHub as OPENID Connect indetity provider, visit IAM console on aws:
+To configure GitHub as OPENID Connect identity provider, visit IAM console on aws:
 
 - Add GitHub as identity provider:
   - provider: token.actions.githubusercontent.com
   - audience: sts.amazonaws.com
-2.  Add a role, for a *web identity* and your GitHub organization (repo name or branch are optional) and
-    select or define a policy to attach with the role, the end result may look like:
+- Add a role:
+  - for a *web identity* and your GitHub organization (repo name or branch are optional)
+  - select or define a policy to attach with the role.
 
-Example trust policy for the IAM role to allow access from all repos under the org YOUR_ORG_NAME:
+Here is an example trust policy for the IAM role to allow access from all repos under the org YOUR_ORG_NAME:
 
 {% raw %} 
 ```json
