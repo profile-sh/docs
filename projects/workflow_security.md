@@ -12,8 +12,8 @@ the outside services may need access to our resources on GitHub. It is very impo
 together services and resources (public or private) in the CI/CD workflows.
 
 >[!IMPORTANT]
-> Even if not passed explicitly, GITHUB_TOKEN is available to all the actions use call in a workflow through github context. Always set restrictive default permissions for the token (in the organization or repository settings).
->
+> Even if not passed explicitly, GITHUB_TOKEN is available, through github context, to *all* the actions called in a workflow. Always set restrictive default permissions for the token (in the organization or repository settings) and elevate them using *permissions* key at specific locations in the workflow.
+
 > [!TIP]
 > Stay informed by reading/re-reading the [docs]
 > When calling actions created by other people or organizations, use full length commit SHA of the called action.
