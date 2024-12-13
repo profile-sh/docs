@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Workflow Security
-description: Security for github workflows
+description: Security considerations for github workflows
 giscus_comments: true
 author: {{site.author}}
 date: 12-12-2024
@@ -9,7 +9,7 @@ date: 12-12-2024
 
 In CI/CD cycles, GitHub actions and workflows may need access to resources and services on GitHub or outside GitHub. Also, 
 the outside services may need access to our resources on GitHub. It is very important to understand how to securely stitch 
-together services and resources (public or private) in the CI/CD workflows.
+together services and resources (public or private) in the CI/CD workflows. 
 
 >[!IMPORTANT]
 > Even if not passed explicitly, GITHUB_TOKEN is available, through github context, to *all* the actions called in a workflow. Always set restrictive default permissions for the token (in the organization or repository settings) and elevate them using *permissions* key at specific locations in the workflow.
@@ -23,9 +23,8 @@ together services and resources (public or private) in the CI/CD workflows.
 ## 1. GitHub Token
 
 Visit [GitHub docs] (https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication) 
-for further reading.
+for further reading, main points:
 
-Main points:
 - GitHub token, as the name suggests, is a *token* provided by GitHub.
 -  used to manage access permissions in GitHub actions and workflows.
 - it is generated at the start of each job by a GitHub app installed in every actions-enabled repository by default.
@@ -43,7 +42,7 @@ Main points:
 
 ### 1.1 Examples:
 
-This needs more work, the following examples are copy paste from GitHub docs.
+This needs more work, the following examples are copy-paste from GitHub docs.
 
 Provide access to github CLI in workflow (example picked from GitHub docs):
 
@@ -101,7 +100,7 @@ jobs:
 - PAT is used for remote access or to provide access to one or more repositories that may or may not be the caller-workflow-repo.
 - (PAT docs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 
-## 3. GitHUb OpenID Connect for AWS
+## 3. GitHub OpenID Connect for AWS
 
 This is one of the methods to define access interface between AWS and GitHub. This is needed to provision resources on AWS.
 
@@ -145,3 +144,11 @@ Example trust policy for the IAM role to allow access from all repos under the o
 ```
 {% endraw %}
 
+
+## Aknowledgments and References
+
+The following resources were very helpful in writing the document:
+
+1. [Secuirty for GitHub actions](https://docs.github.com/en/actions/security-for-github-actions)
+2. [Create a role for OpenID Connect federation](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html#idp_oidc_Create_GitHub)
+3. [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials#configure-aws-credentials-for-github-actions)
