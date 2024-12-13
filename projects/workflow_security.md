@@ -7,9 +7,18 @@ author: {{site.author}}
 date: 12-12-2024
 ---
 
-In CI/CD cycles, GitHub actions and workflows very likely will need access to resources and services on GitHub or outside GitHub. Also, 
+In CI/CD cycles, GitHub actions and workflows may need access to resources and services on GitHub or outside GitHub. Also, 
 the outside services may need access to our resources on GitHub. It is very important to understand how to securely stitch 
 together services and resources (public or private) in the CI/CD workflows.
+
+>[!IMPORTANT]
+> Even if not passed explicitly, GITHUB_TOKEN is available to all the actions use call in a workflow through github context. Always set restrictive default permissions for the token (in the organization or repository settings).
+>
+> [!TIP]
+> Stay informed by reading/re-reading the [docs]
+> When calling actions created by other people or organizations, use full length commit SHA of the called action.
+> Use actions from trusted sources (GitHub, or GitHub verified).
+> visit [GitHub docs](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions) for information about script injection and cross repo access.
 
 ## 1. GitHub Token
 
@@ -22,10 +31,69 @@ Main points:
 - it is generated at the start of each job by a GitHub app installed in every actions-enabled repository by default.
 - the token is specific to a repository and a workflow run, it expires after the job finishes or after 24hrs max.
 - use it in a workflow: secrets.GITHUB_TOKEN or github.token.
-- When used in a reusable workflow, the token  corresponds to the caller repo.
 - the default access permissions of the token can be configured in actions settings for each repo or orgnaization.
 - the default permissions may be *restricted* or *permissive*: [default access](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication#permissions-for-the-github_token)
 - the defaults can be overridden explicitly in a workflow at the top level or the job level using the *permissions* key.
+- without *permissions* key, we get default permissions.
+- when we use permissions key in the workflow, no other permissions are passed implicitly (not even default ones), we have to set the permissions explicitly.
+- When used in a reusable workflow, the token  corresponds to the caller repo.
+- the called reusable workflow has access to github.token and secrets.GITHUB_TOKEN, we do not need to pass these.
+- the GitHub token in the caller/called workflow has default permissions as configured in the caller repo, unless we set explicit permissions in the caller workflow.
+- in the called workflow, we cannot elevate the permissions, so we have to pass the elevated permissions from the caller.
+
+### 1.1 Examples:
+
+This needs more work, the following examples are copy paste from GitHub docs.
+
+Provide access to github CLI in workflow (example picked from GitHub docs):
+
+{% raw %} 
+```yaml
+name: Open new issue
+on: workflow_dispatch
+
+jobs:
+  open-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - run: |
+          gh issue --repo ${{ github.repository }} \
+            create --title "Issue title" --body "Issue body"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+{% endraw %}
+
+2. Use the api:
+
+{% raw %} 
+```yaml
+name: Create issue on commit
+
+on: [ push ]
+
+jobs:
+  create_issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Create issue using REST API
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/issues \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --data '{
+            "title": "Automated issue for commit: ${{ github.sha }}",
+            "body": "This issue was automatically created by the GitHub Action workflow **${{ github.workflow }}**. \n\n The commit hash was: _${{ github.sha }}_."
+            }' \
+          --fail
+```
+{% endraw %}
 
 ## 2. Personal Access Token (PAT)
 
