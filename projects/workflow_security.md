@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Workflow Security
-description: Security considerations for github workflows
+description: Manage access and security in GitHub workflows
 giscus_comments: true
 author: {{site.author}}
 date: 12-12-2024
