@@ -458,7 +458,6 @@ jobs:
     steps:
     # the sed 's/./& /g' is used to unmask a secret, use it only for dummy secrets
       - run: |
-          ${{secrets.org_s=='orgsecret'}}  | sed 's/./& /g'
           echo ${{secrets.org_s}} | sed 's/./& /g' 
           echo ${{vars.repo_var}} # a variable defined at the repository level
           echo ${{vars.org_var}} # a variable defined at the organization level
