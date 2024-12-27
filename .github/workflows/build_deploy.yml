@@ -8,6 +8,6 @@ jobs:
       pages: write
       id-token: write
     name: call the reusable workflow
-    uses: workflows-and-actions/library/.github/workflows/build_deploy_gh_pages_default.yml@main
+    uses: workflows-and-actions/library/.github/workflows/build_deploy_gh.yml@main
 
           
