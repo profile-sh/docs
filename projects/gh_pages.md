@@ -26,6 +26,8 @@ Every time we make a commit, behind the scene, a workflow is triggered that depl
 
 If we want to create pages for any of the repos under our account or org, we will need to enable pages for the corresponding repo and set the pages source to the main branch (root or docs folder). This will auto trigger deploys on every commit in the repo. The pages will show up under {your account or org}.github.io/{repo_name}/path_to_html. For the repos other than the .github.io repo, we will need repo_name in the path to access assets like js and css.
 
+See the [example repo](https://github.com/profile-sh/ghpages-html) and the [deployed pages](https://profile-sh.github.io/ghpages-html/).
+
 In the following discussion, we learn how to setup GitHub pages that require a build. 
 
 ### 1.1 Setup a GitHub organization
