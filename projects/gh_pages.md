@@ -6,6 +6,7 @@ giscus_comments: true
 author: {{site.author}}
 date: 18-11-2024
 ---
+updated: 26-04-2025
 
 Documenting work is very important. If we do not document our work, with the passage of time we forget the steps and process that helped us achieve our goal. Also, documentation helps showcase work, collaborate with others, and makes it easier for others to build upon our dreams after we leave. It also helps improve writing. [GitHub pages](https://docs.github.com/en/pages) is an easy to use service for this purpose. 
 
@@ -13,7 +14,19 @@ GitHub pages is a static website deployed on GitHub. The pages are used for docu
 
 ## 1. Setup GitHub Pages
 
-In this section we will learn how to setup GitHub pages for repos under an organization.
+If we already have html files and do not need a build, Github pages setup becomes very simple: 
+- Create a private/public repo named {your account or org}.github.io
+- In repo settings for pages, set source to main branch and the target folder (root or docs)
+- In the target root folder create a .nojekyll file (this setting will skip jekyll build)
+- Optionally, in target root folder create index.html. This will show up at the root {your account or org}.github.io/
+- All other index.html files under directories and subdirectories will lead to web pages with corresponding url paths
+- css and js may be included in the html heads using script and link tags with url paths relative to root
+
+Every time you make a commit, behind the scene, a workflow is triggered that deploys the pages. To stop this auto behavior, we may optionally change the pages setting for the repo to Github Actions (means user will have to provide Github Actions for building and deploying the pages). After we have made all the commits, unless we have our own workflows and actions setup, we will need to change the setting back to main branch to trigger the github provided workflow.
+
+If we want to create pages for any of the repos under our account or org, we will need to enable pages for the corresponding repo and set the pages source. This will auto trigger deploys on every commit in the repo. The pages will show up under {your account or org}.github.io/{repo_name}/path_to_html. For the repos other than the .github.io repo, we will need repo_name in the path to access assets like js and css.
+
+If we need a build, below we will learn how to setup GitHub pages for repos under an organization. 
 
 ### 1.1 Setup a GitHub organization
 
